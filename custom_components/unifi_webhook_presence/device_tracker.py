@@ -33,7 +33,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up the device_tracker platform for UniFi Webhook Presence."""
     index: Dict[str, WifiPresenceScanner] = {}
-    disconnect_delay = int(entry.options.get(CONF_DISCONNECT_DELAY, entry.data.get(CONF_DISCONNECT_DELAY, 120)))
+    disconnect_delay = int(entry.options.get(CONF_DISCONNECT_DELAY, 120))
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {"entities_by_mac": index}
