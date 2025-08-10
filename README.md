@@ -1,14 +1,21 @@
 # Home Assistant UniFi Webhook Presence
 
-Lightweight Home Assistant custom integration that turns **Client connect/disconnect webhooks** from your UniFi Controller into **device_tracker** entities you can assign to People without exposing the gateway/controller directly to your Home Assistant instance.
+A Home Assistant integration that tracks client devices from your UniFi Controller using **webhooks**. This integration eliminates the need to expose your gateway or controller directly to your Home Assistant instance.
 
 ## Highlights
 - **Local push** (no polling) via HA’s `/api/webhook/*`
-- **Auto-discover**: new MACs create entities on first event
+- **Auto-discovery**: new MACs create entities on their first event
 - **Graceful “away”**: configurable disconnect delay to avoid flapping
 - **Persists entities** across restarts (no “no longer provided” banner)
 - **Entity-only** (no Devices), enabled by default
-- **Secured** by `X-Webhook-Token` header (shared secret)
+- **Secured** by the `X-Webhook-Token` header (shared secret)
+
+## How it works (data flow)
+1. **UniFi Controller** detects a client device connecting or disconnecting.
+2. **UniFi Controller** sends a webhook event to Home Assistant with the device’s MAC address and connection status.
+3. **Home Assistant** receives the webhook event and updates the corresponding **device_tracker** entity.
+
+Home Assistant never connects to or polls the UniFi Controller. **Only the controller pushes** events to HA via the configured webhook action.
 
 ## Install
 1. Copy this folder to:
