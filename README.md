@@ -8,7 +8,7 @@ A Home Assistant integration that tracks client devices from your UniFi Controll
 - **Graceful “away”**: configurable disconnect delay to avoid flapping
 - **Persists entities** across restarts (no “no longer provided” banner)
 - **Entity-only** (no Devices), enabled by default
-- **Secured** by the `X-Webhook-Token` header (shared secret)
+- **Secured** by the `X-Webhook-Token` header (shared secret), unique webhook URL per instance, local-only webhook access
 
 ## How it works (data flow)
 1. **UniFi Controller** detects a client device connecting or disconnecting.
