@@ -1,0 +1,26 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "UniFi Webhook Presence - Configuration",
+                "description": "Please fill in the required information. After this step, you will see the webhook URL.",
+                "data": {
+                    "secret": "Secret token",
+                    "disconnect_delay": "Disconnect delay (s)"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "UniFi Webhook Presence - Options",
+                "description": "Use this webhook URL in order to receive presence updates:\n\n`{webhook_url}`",
+                "data": {
+                    "secret": "Secret token",
+                    "disconnect_delay": "Disconnect delay (s)"
+                }
+            }
+        }
+    }
+}

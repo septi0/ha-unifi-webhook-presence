@@ -11,3 +11,7 @@ DEFAULT_DISCONNECT_DELAY = 120          # seconds
 
 # Headers
 HEADER_TOKEN = "X-Webhook-Token"
+
+# Storage
+STORAGE_VERSION = 1
+STORAGE_KEY_FMT = "uwp_{entry_id}"

@@ -28,6 +28,8 @@ Home Assistant never connects to or polls the UniFi Controller. **Only the contr
 4. Enter:
    - **Secret (token)** — required (used in `X-Webhook-Token`)
    - **Disconnect delay** — seconds before marking `not_home`
+5. **Save** the integration.
+6. Open **integration settings** to grab the generated webhook URL.
 
 ## Usage
 
@@ -39,15 +41,10 @@ Home Assistant never connects to or polls the UniFi Controller. **Only the contr
    - **Client device connected**
    - **Client device disconnected**
 5. **Action:** choose **Webhook** and configure:
-   - **URL:**  
-     
-         http(s)://<ha-instance>/api/webhook/unifi_webhook_presence
-     
-     Replace `<ha-instance>` with your Home Assistant base URL or IP. HTTPS is recommended.
-   - **Headers:** add:
-     
-         X-Webhook-Token: <your_secret>
-     
+   - URL: **Generated Webhook URL**
+
+   - Headers: **X-Webhook-Token: <your_secret>**
+
      Use the same secret you set in the integration.
 6. **Save** the alarm.
 

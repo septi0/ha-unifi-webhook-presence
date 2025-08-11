@@ -1,4 +1,3 @@
-# /config/custom_components/unifi_webhook_presence/device_tracker.py
 from __future__ import annotations
 
 import asyncio
@@ -10,27 +9,19 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.storage import Store
-from homeassistant.helpers.entity_registry import RegistryEntryDisabler
 
 from homeassistant.components.device_tracker import SourceType
 from homeassistant.components.device_tracker.config_entry import ScannerEntity
 
-from .const import DOMAIN, CONF_DISCONNECT_DELAY
+from .const import DOMAIN, CONF_DISCONNECT_DELAY, STORAGE_VERSION, STORAGE_KEY_FMT
 
 _LOGGER = logging.getLogger(__name__)
 
 # Dispatcher signal used by the webhook to ensure (create/update) a tracker
 SIGNAL_ENSURE = f"{DOMAIN}_ensure"  # payload: (mac: str, is_connected: bool)
 
-STORAGE_VERSION = 1
-STORAGE_KEY_FMT = f"{DOMAIN}" + "_data"
-
-
-async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
-) -> None:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the device_tracker platform for UniFi Webhook Presence."""
     index: Dict[str, WifiPresenceScanner] = {}
     disconnect_delay = int(entry.options.get(CONF_DISCONNECT_DELAY, 120))
@@ -60,8 +51,6 @@ async def async_setup_entry(
     if to_add:
         async_add_entities(to_add, True)
         await store.async_save({"macs": sorted(stored_macs)})
-        
-    registry = er.async_get(hass)
 
     # Auto-discover/create new entities
     @callback

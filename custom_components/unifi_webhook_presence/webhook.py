@@ -3,14 +3,13 @@ import logging
 import json
 from typing import Any
 from aiohttp import web
+from ipaddress import ip_address
 
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.util.network import is_local
 
-from .const import (
-    CONF_SECRET,
-    HEADER_TOKEN,
-)
+from .const import CONF_SECRET, HEADER_TOKEN
 from .device_tracker import SIGNAL_ENSURE
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,11 +32,19 @@ def _extract_mac(evt: dict[str, Any]) -> str | None:
 
 
 def build_webhook_handler(hass: HomeAssistant, entry):
-    secret = (entry.options.get(CONF_SECRET) or "").strip()  # static token
-
     @callback
     async def _handler(hass: HomeAssistant, webhook_id: str, request):
+        secret = (entry.options.get(CONF_SECRET) or "").strip()  # static token
         raw = await request.read()
+        
+        try:
+            remote_address = ip_address(request.remote)
+        except ValueError:
+            _LOGGER.error("Invalid remote IP address: %s", request.remote)
+            return web.json_response({"status": "bad_request"}, status=400)
+
+        if not is_local(remote_address):
+            return web.json_response({"status": "forbidden"}, status=403)
 
         # Static token auth
         if secret:

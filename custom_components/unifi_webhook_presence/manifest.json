@@ -1,7 +1,7 @@
 {
     "domain": "unifi_webhook_presence",
     "name": "UniFi Webhook Presence",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "codeowners": [
         "@septi0"
     ],
