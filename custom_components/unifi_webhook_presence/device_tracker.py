@@ -23,7 +23,7 @@ SIGNAL_ENSURE = f"{DOMAIN}_ensure"  # payload: (mac: str, is_connected: bool)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the device_tracker platform for UniFi Webhook Presence."""
-    index: Dict[str, WifiPresenceScanner] = {}
+    index: Dict[str, UnifiWebhookPresenceScanner] = {}
     disconnect_delay = int(entry.options.get(CONF_DISCONNECT_DELAY, 120))
 
     hass.data.setdefault(DOMAIN, {})
@@ -35,11 +35,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     stored_macs: Set[str] = {m.lower() for m in stored.get("macs", [])}
 
     # # ---- Recreate entities from storage ----
-    to_add: List[WifiPresenceScanner] = []
+    to_add: List[UnifiWebhookPresenceScanner] = []
     for mac in sorted(stored_macs):
         if mac in index:
             continue
-        ent = WifiPresenceScanner(
+        ent = UnifiWebhookPresenceScanner(
             mac=mac,
             name=mac,
             dev_id=mac.replace(":", ""),
@@ -58,7 +58,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         mac_l = mac.lower()
         ent = index.get(mac_l)
         if ent is None:
-            ent = WifiPresenceScanner(
+            ent = UnifiWebhookPresenceScanner(
                 mac=mac_l,
                 name='uwp_' + mac_l,
                 dev_id=mac_l.replace(":", ""),
@@ -78,7 +78,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     entry.async_on_unload(async_dispatcher_connect(hass, SIGNAL_ENSURE, _ensure))
 
-class WifiPresenceScanner(ScannerEntity, RestoreEntity):
+class UnifiWebhookPresenceScanner(ScannerEntity, RestoreEntity):
     """A Wi-Fi presence scanner entity backed by webhook events (entity-only, no Device)."""
 
     _attr_should_poll = False
