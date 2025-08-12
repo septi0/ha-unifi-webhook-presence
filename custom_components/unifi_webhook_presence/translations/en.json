@@ -8,6 +8,10 @@
                     "secret": "Secret token",
                     "disconnect_delay": "Disconnect delay (s)"
                 }
+            },
+            "confirm": {
+                "title": "UniFi Webhook Presence - Confirm",
+                "description": "Entry webhook URL is:\n\n`{webhook_url}`\n\nClick Submit to finish."
             }
         }
     },
@@ -15,7 +19,7 @@
         "step": {
             "init": {
                 "title": "UniFi Webhook Presence - Options",
-                "description": "Use this webhook URL in order to receive presence updates:\n\n`{webhook_url}`",
+                "description": "Use this webhook URL in order to receive presence updates for this entry:\n\n`{webhook_url}`",
                 "data": {
                     "secret": "Secret token",
                     "disconnect_delay": "Disconnect delay (s)"

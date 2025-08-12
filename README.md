@@ -3,7 +3,7 @@
 A Home Assistant integration that tracks client devices from your UniFi Controller using **webhooks**. This integration eliminates the need to expose your gateway or controller directly to your Home Assistant instance.
 
 ## Highlights
-- **Local push** (no polling) via HA’s `/api/webhook/*`
+- **Local push** (no polling) via HA's `/api/webhook/*`
 - **Auto-discovery**: new MACs create entities on their first event
 - **Graceful “away”**: configurable disconnect delay to avoid flapping
 - **Persists entities** across restarts (no “no longer provided” banner)
@@ -12,7 +12,7 @@ A Home Assistant integration that tracks client devices from your UniFi Controll
 
 ## How it works (data flow)
 1. **UniFi Controller** detects a client device connecting or disconnecting.
-2. **UniFi Controller** sends a webhook event to Home Assistant with the device’s MAC address and connection status.
+2. **UniFi Controller** sends a webhook event to Home Assistant with the device's MAC address and connection status.
 3. **Home Assistant** receives the webhook event and updates the corresponding **device_tracker** entity.
 
 Home Assistant never connects to or polls the UniFi Controller. **Only the controller pushes** events to HA via the configured webhook action.
@@ -28,8 +28,9 @@ Home Assistant never connects to or polls the UniFi Controller. **Only the contr
 4. Enter:
    - **Secret (token)** — required (used in `X-Webhook-Token`)
    - **Disconnect delay** — seconds before marking `not_home`
-5. **Save** the integration.
-6. Open **integration settings** to grab the generated webhook URL.
+5. After entering the required information, a confirmation step will appear showing your unique **webhook URL**
+
+**NOTE!** If you need to retrieve the Webhook URL again, you can also retrieve it by editing the integration's options in Home Assistant.
 
 ## Usage
 
