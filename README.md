@@ -18,17 +18,13 @@ A Home Assistant integration that tracks client devices from your UniFi Controll
 Home Assistant never connects to or polls the UniFi Controller. **Only the controller pushes** events to HA via the configured webhook action.
 
 ## Install
-1. Copy this folder to:
-       
-       custom_components/unifi_webhook_presence/
-       
-   (Same place as `configuration.yaml`.)
+1. Copy directory `custom_components/unifi_webhook_presence/` to your own `custom_components/` directory
 2. **Restart Home Assistant.**
 3. In HA: **Settings → Devices & Services → Add Integration → “UniFi Webhook Presence”.**
 4. Enter:
    - **Secret (token)** — required (used in `X-Webhook-Token`)
    - **Disconnect delay** — seconds before marking `not_home`
-5. After entering the required information, a confirmation step will appear showing your unique **webhook URL**
+5. After entering the required information, a confirmation step will appear showing your unique **webhook URL**. Copy this URL - you will need it when configuring your UniFi Controller.
 
 **NOTE!** If you need to retrieve the Webhook URL again, you can also retrieve it by editing the integration's options in Home Assistant.
 
