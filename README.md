@@ -1,6 +1,8 @@
 # Home Assistant UniFi Webhook Presence
 
-A Home Assistant integration that tracks client devices from your UniFi Controller using **webhooks**. This integration eliminates the need to expose your gateway or controller directly to your Home Assistant instance.
+A Home Assistant integration that tracks client devices from your UniFi Controller using **webhooks**. This integration eliminates the need to expose your controller directly to your Home Assistant instance.
+
+This integration is not a replacement for the official UniFi integration, it is an alternative for users who only need presence detection and don't want to expose their UniFi Controller directly.
 
 ## Highlights
 - **Local push** (no polling) via HA's `/api/webhook/*`
