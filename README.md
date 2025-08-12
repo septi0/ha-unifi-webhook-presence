@@ -6,9 +6,9 @@ A Home Assistant integration that tracks client devices from your UniFi Controll
 - **Local push** (no polling) via HA's `/api/webhook/*`
 - **Auto-discovery**: new MACs create entities on their first event
 - **Graceful “away”**: configurable disconnect delay to avoid flapping
-- **Persists entities** across restarts (no “no longer provided” banner)
 - **Entity-only** (no Devices), enabled by default
-- **Secured** by the `X-Webhook-Token` header (configurable secret), unique webhook URL per instance, local-only webhook access
+- **Secured** by the `X-Webhook-Token` header (configurable secret), unique webhook URL per entry, local-only webhook access
+- **Multiple entries** are supported, allowing for different webhook URLs for each entry
 
 ## How it works (data flow)
 1. **UniFi Controller** detects a client device connecting or disconnecting.
