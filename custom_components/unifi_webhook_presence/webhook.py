@@ -44,6 +44,7 @@ def build_webhook_handler(hass: HomeAssistant, entry):
             return web.json_response({"status": "bad_request"}, status=400)
 
         if not is_local(remote_address):
+            _LOGGER.warning("unifi_webhook_presence: request from non-local address %s", remote_address)
             return web.json_response({"status": "forbidden"}, status=403)
 
         # Static token auth
