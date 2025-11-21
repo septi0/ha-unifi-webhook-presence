@@ -31,8 +31,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     # ---- Persistent store of discovered MACs ----
     store = Store(hass, STORAGE_VERSION, STORAGE_KEY_FMT.format(entry_id=entry.entry_id))
-    stored: dict = await store.async_load() or {"macs": []}
+    stored: dict = await store.async_load() or {"macs": [], "ips": {}}
     stored_macs: Set[str] = {m.lower() for m in stored.get("macs", [])}
+    stored_ips: Dict[str, str] = stored.get("ips", {})
 
     # # ---- Recreate entities from storage ----
     to_add: List[UnifiWebhookPresenceScanner] = []
@@ -41,6 +42,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             continue
         ent = UnifiWebhookPresenceScanner(
             mac=mac,
+            ip_address=stored_ips.get(mac),
             name=mac,
             dev_id=mac.replace(":", ""),
             disconnect_delay=disconnect_delay,
@@ -50,16 +52,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     if to_add:
         async_add_entities(to_add, True)
-        await store.async_save({"macs": sorted(stored_macs)})
+        await store.async_save({"macs": sorted(stored_macs), "ips": stored_ips})
 
     # Auto-discover/create new entities
     @callback
-    def _ensure(mac: str, is_connected: bool) -> None:
+    def _ensure(mac: str, ip_address: str | None, is_connected: bool) -> None:
+        _LOGGER.debug("unifi_webhook_presence: received mac=%s, ip=%s, is_connected=%s", mac, ip_address, is_connected)
+        
         mac_l = mac.lower()
         ent = index.get(mac_l)
         if ent is None:
             ent = UnifiWebhookPresenceScanner(
                 mac=mac_l,
+                ip_address=ip_address,
                 name='uwp_' + mac_l,
                 dev_id=mac_l.replace(":", ""),
                 disconnect_delay=disconnect_delay,
@@ -68,11 +73,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             index[mac_l] = ent
             async_add_entities([ent])
 
+            persist = False
 
-            # Persist the new MAC so it exists on next restart
+            # Persist the new MAC
             if mac_l not in stored_macs:
                 stored_macs.add(mac_l)
-                hass.create_task(store.async_save({"macs": sorted(stored_macs)}))
+                persist = True
+            
+            # Persist the IP if provided and changed
+            if ip_address and (stored_ips.get(mac_l) is None or stored_ips.get(mac_l) != ip_address):
+                stored_ips[mac_l] = ip_address
+                persist = True
+
+            if persist:
+                hass.create_task(store.async_save({"macs": sorted(stored_macs), "ips": stored_ips}))
+
         else:
             ent.receive_update(is_connected)
 
@@ -85,9 +100,10 @@ class UnifiWebhookPresenceScanner(ScannerEntity, RestoreEntity):
     _attr_source_type = SourceType.ROUTER
     _attr_entity_registry_enabled_default = True
 
-    def __init__(self, mac: str, name: str, dev_id: str, disconnect_delay: int) -> None:
+    def __init__(self, mac: str, ip_address: str | None, name: str, dev_id: str, disconnect_delay: int) -> None:
         # Identity
         self._mac = mac
+        self._ip_address = ip_address
         self._attr_name = name
         self._attr_unique_id = f"unifi_webhook_presence_{mac}"
         self._dev_id = dev_id
@@ -112,8 +128,7 @@ class UnifiWebhookPresenceScanner(ScannerEntity, RestoreEntity):
 
     @property
     def ip_address(self) -> str | None:
-        # We don't track IP from the webhook (could be added later if provided).
-        return None
+        return self._ip_address
 
     # ---- Helpers used by platform/webhook ----
     def set_initial_state(self, is_connected: bool) -> None:
@@ -161,5 +176,6 @@ class UnifiWebhookPresenceScanner(ScannerEntity, RestoreEntity):
     def extra_state_attributes(self):
         return {
             "mac": self._mac,
+            "ip": self._ip_address,
             "dev_id": self._dev_id,
         }
